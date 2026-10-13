@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050505">
+<title>Living Particles — Portrait Experiment</title>
+<link rel="stylesheet" href="css/styles.css">
+<script src="js/app.js" defer></script>
+</head>
+<body>
+<canvas id="scene" aria-label="Animated particle portrait"><p>Your browser does not support the canvas needed to display the particle portrait.</p></canvas>
+<div class="hud">
+  <div class="top">
+    <div><div class="eyebrow">Generative study / 001</div><h1>Living Particles</h1></div>
+    <div class="status" role="status" aria-live="polite"><span class="dot" aria-hidden="true"></span><span id="status">Loading portrait</span></div>
+  </div>
+  <div class="bottom">
+    <div class="hint">A face made of light, gently breathing in the dark.<br>Move your cursor to disturb the field.</div>
+    <div class="controls" aria-label="Animation controls">
+      <label class="study-control" for="studySelect"><span>STUDY</span><select id="studySelect" aria-label="Choose a generative study">
+        <option value="portrait">Breathing portrait</option>
+        <option value="orbit">Orbital bloom</option>
+        <option value="flow">Electric current</option>
+        <option value="constellation">Constellation</option>
+        <option value="kaleidoscope">Kaleidoscope</option>
+      </select></label>
+      <button id="motionBtn" class="active" type="button" aria-pressed="true">Motion on</button>
+      <button id="modeBtn" type="button" aria-pressed="false">Attract</button>
+      <div class="range"><label for="energy">ENERGY</label><input id="energy" type="range" min="0" max="2" step=".1" value="1" aria-label="Particle energy"></div>
+      <label class="color-control" for="particleColor"><span>COLOR</span><input id="particleColor" type="color" value="#f5f7ff" aria-label="Particle color"></label>
+    </div>
+  </div>
+</div>
+<div class="image-tools" id="imageTools" aria-label="Portrait images">
+  <button class="upload-btn" id="uploadBtn" type="button" aria-label="Add images">＋ Add images</button>
+  <button class="save-btn" id="saveBtn" type="button" aria-label="Save current portrait image">↓ Save image</button>
+  <input id="fileInput" type="file" accept="image/*" multiple aria-label="Choose images to add">
+</div>
+<div class="drop-note" id="dropNote" aria-hidden="true">Drop images to add them</div>
+</body>
+</html>
