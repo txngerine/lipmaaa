@@ -2,7 +2,7 @@
   const canvas = document.querySelector('#scene');
   const ctx = canvas.getContext('2d', { alpha: false });
   const image = new Image();
-  const sources = [{ name: 'Original portrait', src: 'assets/original-portrait.jpg' }];
+  const sources = [{ name: 'Original portrait', src: 'assets/original-portrait.jpg', fallback: window.PORTRAIT_FALLBACK_SRC || '' }];
   let activeSource = 0;
   image.decoding = 'async';
   let W=0,H=0,dpr=1, particles=[], running=true, repel=false, energy=1;
@@ -18,16 +18,29 @@
     randomState=(randomState*1664525+1013904223)>>>0;
     return a+(randomState/4294967296)*(b-a);
   }
+  function handleImageLoad(){
+    renderImageTools();
+    if(resize()){ scheduleDraw(); return; }
+    const source=sources[activeSource];
+    if(source && source.fallback && image.src!==source.fallback){
+      source.src=source.fallback;
+      image.src=source.fallback;
+      scheduleDraw();
+      return;
+    }
+    document.querySelector('#status').textContent='Image pixels blocked by the browser — serve this folder over HTTP';
+    scheduleDraw();
+  }
   function loadSource(index){
     const source=sources[index];
     if(!source) return;
     activeSource=index;
     renderImageTools();
     document.querySelector('#status').textContent='Loading image';
-    image.onload=()=>{renderImageTools();resize();scheduleDraw();};
+    image.onload=handleImageLoad;
     image.onerror=()=>{document.querySelector('#status').textContent=`Could not load ${source.name}`;};
     image.src=source.src;
-    if(image.complete && image.naturalWidth) { renderImageTools(); resize(); scheduleDraw(); }
+    if(image.complete && image.naturalWidth) handleImageLoad();
   }
   function readImageFile(file){
     const src=URL.createObjectURL(file);
@@ -40,10 +53,11 @@
     W=innerWidth; H=innerHeight;
     canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
     ctx.setTransform(dpr,0,0,dpr,0,0);
-    if(image.complete && image.naturalWidth) makeParticles();
+    if(image.complete && image.naturalWidth) return makeParticles();
+    return true;
   }
   function makeParticles(){
-    if (!image.naturalWidth || !image.naturalHeight) return;
+    if (!image.naturalWidth || !image.naturalHeight) return true;
     // Recreate the same particle layout whenever this source is resized.
     randomState=(activeSource+1)>>>0;
     const off=document.createElement('canvas');
@@ -51,7 +65,12 @@
     off.width=ow; off.height=oh;
     const oc=off.getContext('2d',{willReadFrequently:true});
     oc.drawImage(image,0,0,ow,oh);
-    const pixels=oc.getImageData(0,0,ow,oh).data;
+    let pixels;
+    try{
+      pixels=oc.getImageData(0,0,ow,oh).data;
+    }catch(error){
+      return false;
+    }
     const scale=Math.min(W*.78/ow,H*.78/oh);
     const drawW=ow*scale, drawH=oh*scale;
     const left=(W-drawW)/2, top=(H-drawH)/2;
@@ -85,6 +104,7 @@
     links=study==='constellation'?buildLinks(particles):[];
     updateStatus();
     scheduleDraw();
+    return true;
   }
   function buildLinks(points){
     const cellSize=32,maxDistance=42,cells=new Map(),result=[];
@@ -272,7 +292,7 @@
   ['dragenter','dragover'].forEach(type=>window.addEventListener(type,e=>{e.preventDefault();dropNote.classList.add('show');}));
   ['dragleave','drop'].forEach(type=>window.addEventListener(type,e=>{e.preventDefault();if(type==='drop')addFiles(e.dataTransfer.files);dropNote.classList.remove('show');}));
   image.onerror=()=>{document.querySelector('#status').textContent='Could not load the original portrait';};
-  image.onload=()=>{renderImageTools();resize();scheduleDraw();};
+  image.onload=handleImageLoad;
   window.addEventListener('resize',resize);
   document.addEventListener('visibilitychange',()=>{
     if(document.hidden && frameId){cancelAnimationFrame(frameId);frameId=0;}
@@ -282,6 +302,6 @@
     if(!event.persisted){ownedImageUrls.forEach(URL.revokeObjectURL);ownedImageUrls.clear();}
   });
   image.src=sources[0].src;
-  if(image.complete && image.naturalWidth) resize();
+  if(image.complete && image.naturalWidth) handleImageLoad();
   scheduleDraw();
 })();

@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#050505">
 <title>Living Particles — Portrait Experiment</title>
 <link rel="stylesheet" href="css/styles.css">
+<script src="js/portrait-data.js" defer></script>
 <script src="js/app.js" defer></script>
 </head>
 <body>
@@ -17,6 +18,11 @@
   </div>
   <div class="bottom">
     <div class="hint">A face made of light, gently breathing in the dark.<br>Move your cursor to disturb the field.</div>
+    <div class="image-tools" id="imageTools" aria-label="Portrait images">
+      <button class="upload-btn" id="uploadBtn" type="button" aria-label="Add images">＋ Add images</button>
+      <button class="save-btn" id="saveBtn" type="button" aria-label="Save current portrait image">↓ Save image</button>
+      <input id="fileInput" type="file" accept="image/*" multiple aria-label="Choose images to add">
+    </div>
     <div class="controls" aria-label="Animation controls">
       <label class="study-control" for="studySelect"><span>STUDY</span><select id="studySelect" aria-label="Choose a generative study">
         <option value="portrait">Breathing portrait</option>
@@ -31,11 +37,6 @@
       <label class="color-control" for="particleColor"><span>COLOR</span><input id="particleColor" type="color" value="#f5f7ff" aria-label="Particle color"></label>
     </div>
   </div>
-</div>
-<div class="image-tools" id="imageTools" aria-label="Portrait images">
-  <button class="upload-btn" id="uploadBtn" type="button" aria-label="Add images">＋ Add images</button>
-  <button class="save-btn" id="saveBtn" type="button" aria-label="Save current portrait image">↓ Save image</button>
-  <input id="fileInput" type="file" accept="image/*" multiple aria-label="Choose images to add">
 </div>
 <div class="drop-note" id="dropNote" aria-hidden="true">Drop images to add them</div>
 </body>
